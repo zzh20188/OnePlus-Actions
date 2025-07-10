@@ -1,0 +1,128 @@
+name: Android 12 5.10
+permissions:
+  contents: write  # Allow writing to repository contents (for pushing tags)
+  actions: write   # Allows triggering actions
+
+on:
+  workflow_call:
+  workflow_dispatch:  # This allows this workflow to be called from another workflow
+    inputs:
+      CPU:
+        description: "CPU分支"
+        required: true
+
+        
+      FEIL:
+        description: "手机型号"
+        required: true
+        type: choice
+        options:
+          - 'oneplus_12'
+          - 'oneplus_ace3_pro'
+          - 'oneplus_ace5'
+          - 'oneplus_13r'
+          - 'oneplus_pad2'
+          - 'oneplus_pad_pro'
+          - 'oneplus_11'
+          - 'oneplus_12r'
+          - 'oneplus_ace2_pro'
+          - 'oneplus_ace3'
+          - 'oneplus_open'
+          - 'oneplus_10t'
+          - 'oneplus_11r'
+          - 'oneplus_ace2'
+          - 'oneplus_ace_pro'
+          - 'oneplus_10_pro'
+          - 'oneplus_ace_3v'
+          - 'onrplus_nord_4'
+          - 'oneplus_nord_ce4'
+        default: 'oneplus_12'
+        
+      CPUD:
+        description: "处理器代号"
+        required: true
+        type: choice
+        options:
+          - 'pineapple'
+          - 'kalama'
+          - 'waipio'
+          - 'crow'
+        default: 'pineapple'
+        
+      ANDROID_VERSION:
+        description: "内核安卓版本"
+        required: true
+        type: choice
+        options:
+          - 'android14'
+          - 'android13'
+          - 'android12'
+        default: 'android14'
+        
+      KERNEL_VERSION:
+        description: "内核版本"
+        required: true
+        type: choice
+        options:
+          - '6.1'
+          - '5.15'
+          - '5.10'
+        default: '6.1'
+        
+      KPM:
+       description: "是否启用KPM"
+       required: true
+       type: choice
+       options:
+           - 'On'
+           - 'Off'
+       default: 'Off'
+       
+      lz4kd:
+       description: "是否启用lz4kd(关闭则6.1系启用lz4 + zstd)"
+       required: true
+       type: choice
+       options:
+          - 'On'
+          - 'Off'
+       default: 'Off'
+       
+      bbr:
+       description: "是否启用bbr算法(优化上行数据, 对手机日用无太大意义甚至可能负优化)"
+       required: true
+       type: choice
+       options:
+          - 'On'
+          - 'Off'
+       default: 'Off'
+
+      proxy:
+       description: "是否添加代理性能优化"
+       required: true
+       type: choice
+       options:
+          - 'On'
+          - 'Off'
+       default: 'On'
+  
+jobs:
+  build-kernel-sm8650:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - FEIL: "oneplus_12"
+        - FEIL: "oneplus_ace3_pro.xml"
+        
+    uses: ./.github/workflows/Build SukiSU Ultra.yml
+    secrets: inherit
+    with:
+        CPU: "sm8650"
+        FEIL: ${{ inputs.FEIL }}
+        CPUD: "pineapple"
+        ANDROID_VERSION: "android14"
+        KERNEL_VERSION: "6.1"
+        KPM: "Off"
+        lz4kd: "Off"
+        bbr: "Off"
+        proxy: "On"
